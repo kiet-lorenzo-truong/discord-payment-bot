@@ -84,7 +84,6 @@ client.on('messageCreate', async (message) => {
 
     const { EmbedBuilder } = require('discord.js');
     const embed = new EmbedBuilder()
-      .setColor('#9b59b6')
       .setImage(imageUrl);
     
     let contentText = null;
