@@ -13,7 +13,11 @@ module.exports = {
     .addStringOption(option => 
       option.setName('link')
         .setDescription('The direct image URL link')
-        .setRequired(true)),
+        .setRequired(true))
+    .addBooleanOption(option =>
+      option.setName('ping')
+        .setDescription('Choose True if you want the bot to ping the user who typed the shortcut word')
+        .setRequired(false)),
   
   async execute(interaction) {
     // Admin only check
@@ -23,6 +27,7 @@ module.exports = {
 
     const name = interaction.options.getString('name').trim().toLowerCase();
     const link = interaction.options.getString('link');
+    const ping = interaction.options.getBoolean('ping') || false;
 
     if (!link.startsWith('http://') && !link.startsWith('https://')) {
       return interaction.reply({ content: '❌ Link must start with http:// or https://', ephemeral: true });
@@ -38,12 +43,16 @@ module.exports = {
       }
     }
 
-    gallery[name] = link;
+    gallery[name] = {
+      url: link,
+      should_ping: ping
+    };
     fs.writeFileSync(galleryPath, JSON.stringify(gallery, null, 2), 'utf-8');
 
+    const pingStatus = ping ? 'Enabled' : 'Disabled';
     const embed = new EmbedBuilder()
       .setTitle('✅ Shortcut Registered')
-      .setDescription(`Typing \`${name}\` will now display your custom image frame.`)
+      .setDescription(`Typing \`${name}\` will now display your custom image frame.\nPing member behavior: **${pingStatus}**.`)
       .setColor('#00ff00')
       .setThumbnail(link);
 

@@ -64,14 +64,31 @@ client.on('messageCreate', async (message) => {
   }
 
   if (gallery[userWord]) {
+    const itemData = gallery[userWord];
+    let imageUrl = '';
+    let shouldPing = false;
+
+    if (typeof itemData === 'object' && itemData !== null) {
+      imageUrl = itemData.url;
+      shouldPing = itemData.should_ping;
+    } else {
+      imageUrl = itemData;
+      shouldPing = false;
+    }
+
     const { EmbedBuilder } = require('discord.js');
     const embed = new EmbedBuilder()
       .setTitle(`🌌 ${userWord.charAt(0).toUpperCase() + userWord.slice(1)} Gallery Asset`)
       .setColor('#9b59b6')
-      .setImage(gallery[userWord])
+      .setImage(imageUrl)
       .setFooter({ text: `Triggered by ${message.author.displayName}`, iconURL: message.author.displayAvatarURL() });
     
-    await message.channel.send({ embeds: [embed] });
+    const contentText = shouldPing ? `Hey ${message.author.toString()}, here you go!` : null;
+    
+    const messageOptions = { embeds: [embed] };
+    if (contentText) messageOptions.content = contentText;
+
+    await message.channel.send(messageOptions);
   }
 });
 
