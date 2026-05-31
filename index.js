@@ -67,9 +67,11 @@ client.on('messageCreate', async (message) => {
     const itemData = gallery[userWord];
     let imageUrl = '';
     let targetUserId = null;
+    let customText = null;
 
     if (typeof itemData === 'object' && itemData !== null) {
       imageUrl = itemData.url;
+      customText = itemData.custom_text || null;
       // Handle new target_user_id and fallback to old should_ping
       if (itemData.target_user_id) {
         targetUserId = itemData.target_user_id;
@@ -87,7 +89,12 @@ client.on('messageCreate', async (message) => {
       .setImage(imageUrl)
       .setFooter({ text: `Triggered by ${message.author.displayName}`, iconURL: message.author.displayAvatarURL() });
     
-    const contentText = targetUserId ? `Hey <@${targetUserId}>, here you go!` : null;
+    let contentText = null;
+    if (customText) {
+      contentText = targetUserId ? `${customText} <@${targetUserId}>` : customText;
+    } else if (targetUserId) {
+      contentText = `Hey <@${targetUserId}>, here you go!`;
+    }
     
     const messageOptions = { embeds: [embed] };
     if (contentText) messageOptions.content = contentText;

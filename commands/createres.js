@@ -17,6 +17,10 @@ module.exports = {
     .addUserOption(option =>
       option.setName('target_user')
         .setDescription('Optional user to ping when this shortcut is used')
+        .setRequired(false))
+    .addStringOption(option =>
+      option.setName('text')
+        .setDescription('Optional custom text message to accompany the image')
         .setRequired(false)),
   
   async execute(interaction) {
@@ -28,6 +32,7 @@ module.exports = {
     const name = interaction.options.getString('name').trim().toLowerCase();
     const link = interaction.options.getString('link');
     const targetUser = interaction.options.getUser('target_user');
+    const customText = interaction.options.getString('text');
 
     if (!link.startsWith('http://') && !link.startsWith('https://')) {
       return interaction.reply({ content: '❌ Link must start with http:// or https://', ephemeral: true });
@@ -45,13 +50,14 @@ module.exports = {
 
     gallery[name] = {
       url: link,
-      target_user_id: targetUser ? targetUser.id : null
+      target_user_id: targetUser ? targetUser.id : null,
+      custom_text: customText || null
     };
     fs.writeFileSync(galleryPath, JSON.stringify(gallery, null, 2), 'utf-8');
 
     const embed = new EmbedBuilder()
       .setTitle('✅ Shortcut Registered')
-      .setDescription(`Typing \`${name}\` will now display your custom image frame.\nTarget Ping: ${targetUser ? targetUser.toString() : 'None'}.`)
+      .setDescription(`Typing \`${name}\` will now display your custom image frame.\nTarget Ping: ${targetUser ? targetUser.toString() : 'None'}\nCustom Text: ${customText || 'None'}`)
       .setColor('#00ff00')
       .setThumbnail(link);
 
