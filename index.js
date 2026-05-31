@@ -66,14 +66,18 @@ client.on('messageCreate', async (message) => {
   if (gallery[userWord]) {
     const itemData = gallery[userWord];
     let imageUrl = '';
-    let shouldPing = false;
+    let targetUserId = null;
 
     if (typeof itemData === 'object' && itemData !== null) {
       imageUrl = itemData.url;
-      shouldPing = itemData.should_ping;
+      // Handle new target_user_id and fallback to old should_ping
+      if (itemData.target_user_id) {
+        targetUserId = itemData.target_user_id;
+      } else if (itemData.should_ping) {
+        targetUserId = message.author.id;
+      }
     } else {
       imageUrl = itemData;
-      shouldPing = false;
     }
 
     const { EmbedBuilder } = require('discord.js');
@@ -83,7 +87,7 @@ client.on('messageCreate', async (message) => {
       .setImage(imageUrl)
       .setFooter({ text: `Triggered by ${message.author.displayName}`, iconURL: message.author.displayAvatarURL() });
     
-    const contentText = shouldPing ? `Hey ${message.author.toString()}, here you go!` : null;
+    const contentText = targetUserId ? `Hey <@${targetUserId}>, here you go!` : null;
     
     const messageOptions = { embeds: [embed] };
     if (contentText) messageOptions.content = contentText;
