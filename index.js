@@ -85,14 +85,14 @@ client.on('messageCreate', async (message) => {
     const { EmbedBuilder } = require('discord.js');
     const embed = new EmbedBuilder()
       .setImage(imageUrl);
-    
+
     let contentText = null;
     if (customText) {
-      contentText = targetUserId ? `${customText} <@${targetUserId}>` : customText;
+      contentText = targetUserId ? `<@${targetUserId}> ${customText}` : customText;
     } else if (targetUserId) {
       contentText = `Hey <@${targetUserId}>, here you go!`;
     }
-    
+
     const messageOptions = { embeds: [embed] };
     if (contentText) messageOptions.content = contentText;
 
