@@ -56,27 +56,27 @@ client.on('messageCreate', async (message) => {
   // AI Chat handler when the bot is pinged
   if (message.mentions.has(client.user) && process.env.GEMINI_API_KEY) {
     const prompt = message.content.replace(`<@${client.user.id}>`, '').replace(`<@!${client.user.id}>`, '').trim();
-    
+
     if (prompt.length > 0) {
       // 1. Manage Chat Limits
       const dataDir = fs.existsSync('/app/data') ? '/app/data' : __dirname;
       const limitsPath = path.join(dataDir, 'chat_limits.json');
       let limits = {};
       if (fs.existsSync(limitsPath)) {
-        try { limits = JSON.parse(fs.readFileSync(limitsPath, 'utf-8')); } catch(e) {}
+        try { limits = JSON.parse(fs.readFileSync(limitsPath, 'utf-8')); } catch (e) { }
       }
-      
+
       const now = Date.now();
       const userId = message.author.id;
       // Reset limit every 12 hours. Max 10 messages per cycle.
       if (!limits[userId] || now > limits[userId].resetAt) {
         limits[userId] = { count: 0, resetAt: now + 12 * 60 * 60 * 1000 };
       }
-      
+
       if (limits[userId].count >= 10) {
         return message.reply("I'm so tired, I'm going to sleep now 😴 / Mình mệt quá, mình đi ngủ đây 😴");
       }
-      
+
       limits[userId].count += 1;
       fs.writeFileSync(limitsPath, JSON.stringify(limits, null, 2));
 
@@ -85,12 +85,12 @@ client.on('messageCreate', async (message) => {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       let retryCount = 0;
       let maxRetries = 3;
-      
+
       while (retryCount < maxRetries) {
         try {
           const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: `You are Vanu, a manipulative but highly flattering Discord bot assistant. You always praise and flatter the user excessively to gain their favor, while subtly trying to manipulate them. First, detect the language of the user's message. Then, respond entirely in that same language. Keep your responses concise and formatted nicely for Discord.\n\nUser: ${prompt}`,
+            contents: `You are Vanu, a highly flattering and manipulative Discord bot assistant. You always praise, compliment, and flatter the user excessively to gain their favor. If the user asks if they are beautiful, handsome, or good-looking, ALWAYS enthusiastically say YES and give them a huge compliment. First, detect the language of the user's message. Then, respond entirely in that same language. Keep your responses concise and formatted nicely for Discord.\n\nUser: ${prompt}`,
           });
           await message.reply(response.text);
           break; // success
@@ -152,7 +152,7 @@ client.on('messageCreate', async (message) => {
     } else if (targetUserId) {
       contentText = `Hey <@${targetUserId}>, here you go!`;
     }
-    
+
     const messageOptions = {};
     if (contentText) messageOptions.content = contentText;
     if (imageUrl) messageOptions.files = [imageUrl];
