@@ -110,14 +110,14 @@ Do not use excessive flattery unless explicitly asked about someone's beauty or 
             retryCount++;
             if (retryCount >= maxRetries) {
               console.error('Gemini API Rate Limit exceeded after retries:', err);
-              await message.reply('❌ The AI is currently receiving too many requests. Please try again in a few seconds.');
+              await message.reply(`❌ API Error (429): ${err.message}`);
               break;
             }
             const waitTime = Math.pow(2, retryCount) * 1000; // wait 2s, 4s, 8s
             await new Promise(resolve => setTimeout(resolve, waitTime));
           } else {
             console.error('Gemini API Error:', err);
-            await message.reply('❌ Sorry, I encountered an error processing your request. Please check my API configuration.');
+            await message.reply(`❌ API Error: ${err.message}`);
             break;
           }
         }
