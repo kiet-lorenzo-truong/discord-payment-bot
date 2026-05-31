@@ -90,10 +90,11 @@ client.on('messageCreate', async (message) => {
       contentText = `Hey <@${targetUserId}>, here you go!`;
     }
     
-    // Append the image URL so Discord unfurls it as a large native image
-    contentText = contentText ? `${contentText}\n${imageUrl}` : imageUrl;
+    const messageOptions = {};
+    if (contentText) messageOptions.content = contentText;
+    if (imageUrl) messageOptions.files = [imageUrl];
 
-    await message.channel.send({ content: contentText });
+    await message.channel.send(messageOptions);
   }
 });
 
