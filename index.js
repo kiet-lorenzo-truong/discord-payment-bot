@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const fs = require('fs');
@@ -206,7 +206,10 @@ ${chatHistoryText}
 
     const messageOptions = {};
     if (contentText) messageOptions.content = contentText;
-    if (imageUrl) messageOptions.files = [imageUrl];
+    if (imageUrl) {
+      const embed = new EmbedBuilder().setImage(imageUrl);
+      messageOptions.embeds = [embed];
+    }
 
     await message.channel.send(messageOptions);
   }
