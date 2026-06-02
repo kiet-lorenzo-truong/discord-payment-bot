@@ -85,7 +85,8 @@ client.on('messageCreate', async (message) => {
         limits[userId] = { count: 0, resetAt: now + 12 * 60 * 60 * 1000 };
       }
 
-      if (limits[userId].count >= 50) {
+      const unlimitedUsers = ['1274644670193995870', '422009646031568908'];
+      if (!unlimitedUsers.includes(userId) && limits[userId].count >= 50) {
         return message.reply("I'm so tired, I'm going to sleep now 😴 / Mình mệt quá, mình đi ngủ đây 😴");
       }
 
